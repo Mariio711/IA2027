@@ -1,0 +1,105 @@
+; Practica 2. Bloques de codigo del guion, numerados como en el guion.
+; Copie solo el bloque que necesite.
+
+; --- Codigo 1 (seccion 2) ---
+(deffacts atalaya
+  (lugar (id atalaya) (nombre "Atalaya en ruinas")
+    (descripcion "Una torre derruida al borde del acantilado."))
+  (camino pico este atalaya abierto)
+  (camino atalaya oeste pico abierto)
+  (entidad (id paravela) (categoria objeto) (lugar atalaya)
+    (descripcion "Una tela resistente tensada que permite planear.")))
+
+; --- Codigo 2 (seccion 3) ---
+(defrule paravela_custodiada
+  (declare (salience 10))
+  ?o <- (orden recoger | tomar $? paravela)
+  (entidad (id explorador) (lugar atalaya))
+  ; Incluya aqui el patron del guardian segun su propia implementacion
+  =>
+  (retract ?o)
+  (println "No parece seguro coger la paravela en este momento."))
+
+; --- Codigo 3 (seccion 4) ---
+(defrule pedir_orden
+  (declare (salience -100))
+  (not (orden $?))
+  (not (fin))
+  =>
+  (print "> ")
+  (assert (orden (explode$ (lowcase (readline))))))
+
+; --- Codigo 4 (seccion 4) ---
+(defrule orden_vacia
+  (declare (salience -5))
+  ?o <- (orden)
+  =>
+  (retract ?o))
+
+; --- Codigo 5 (seccion 5.2) ---
+(switch <expresion-test>
+  (case <valor-1> then <accion>*)
+  (case <valor-2> then <accion>*)
+  ...
+  [(default <accion>*)])
+
+; --- Codigo 6 (seccion 5.2) ---
+(deffunction actitud (?estado)
+  (switch ?estado
+    (case patrulla then "El guardian recorre la atalaya con paso lento.")
+    (case alerta then "El guardian fija en ti su ojo rojo.")
+    (case despistado then "El guardian gira la cabeza, buscandote entre las ruinas.")
+    (case desactivado then "El ojo del guardian se ha apagado.")
+    (default "El guardian permanece inmovil.")))
+
+; --- Codigo 7 (seccion 6) ---
+(deftemplate mapa
+  (multislot visitados))
+
+(deffacts mapa_inicial
+  (mapa (visitados pico)))
+
+; --- Codigo 8 (seccion 6) ---
+(defrule anotar_lugar
+  (entidad (id explorador) (lugar ?l))
+  ?m <- (mapa (visitados $?v))
+  (not (mapa (visitados $? ?l $?)))
+  =>
+  (modify ?m (visitados $?v ?l))
+  (println "La tablilla anota en el mapa: " ?l))
+
+; --- Codigo 9 (seccion 7) ---
+(deffunction reproducir_memoria ()
+  (if (open "memoria_guardian.txt" memoria "r")
+    then (bind ?linea (readline memoria))
+         (while (neq ?linea EOF) do
+           (println ?linea)
+           (bind ?linea (readline memoria)))
+         (close memoria)
+    else (println "El guardian emite un zumbido ininteligible.")))
+
+; --- Codigo 10 (seccion 7) · texto, no es codigo CLIPS ---
+Unidad de vigilancia de la atalaya. Ultima orden recibida hace cien anos.
+Custodiar la paravela hasta que regrese el portador de la tablilla.
+Portador reconocido. Mision completada.
+
+; --- Codigo 11 (seccion 8) ---
+(deffunction planear (?r)
+  (loop-for-count (?tramo 1 5) do
+    (bind ?r (- ?r 5))
+    (println "Planeas... altura " (- 5 ?tramo) ", resistencia " ?r))
+  ?r)    ; devuelve la resistencia al tocar tierra
+
+; --- Codigo 12 (seccion 8) ---
+(defrule saltar
+  ?o <- (orden saltar)
+  ?e <- (entidad (id explorador) (lugar pico))
+  (entidad (id paravela) (lugar explorador))
+  ?f <- (resistencia ?r)
+  (test (>= ?r ?*coste-planear*))
+  =>
+  (retract ?o ?f)
+  (println "Saltas desde el pico y despliegas la paravela.")
+  (assert (resistencia (planear ?r)) (fin))
+  (modify ?e (lugar llanura))
+  (println "Tocas tierra fuera de la meseta. La Gran Llanura se extiende ante ti."))
