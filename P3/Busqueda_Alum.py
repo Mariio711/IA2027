@@ -40,9 +40,9 @@ def expandir(nodo: Nodo) -> list:
     sucesores = []
     for op in operadores:
         if esValido(op, nodo.estado):
-            nuevo: Nodo
-            nuevo.estado = aplicaOperador(op, nodo.estado) #aqui me quede
-
+            nuevoEstado = aplicaOperador(op, nodo.estado)
+            hijo = Nodo(nuevoEstado, op, nodo.costeCamino + coste(op, nodo.estado), nodo.profundidad + 1, nodo)
+            sucesores.append(hijo)
     return sucesores
 
 def BFS() -> None:
@@ -53,15 +53,49 @@ def BFS() -> None:
     sucesores = []
     cerrados = []
     abiertos.append(raiz)
+    contador = 0
 
-    # Completar el resto del código
+    while abiertos and not objetivo:
+        actual = abiertos[0]
+        abiertos.pop(0)
+        cerrados.append(actual)
+        objetivo = testObjetivo(actual.estado)
+        if not objetivo:
+            sucesores = expandir(actual)
+            abiertos.extend(sucesores)
+            contador += 1
 
     if objetivo:
-        dispSolucion()  # Completar
+        dispSolucion(actual)
+        print("solucion encontrada en ", contador)
     elif not objetivo:
         print("No se ha encontrado solución")
 
-# Implementar la búsqueda en profundidad
+def DFS() -> None: #es un copia pega de BFS hay que cambiar cosas aun
+    objetivo = False
     
-    
-    
+    raiz = NodoInicial()
+    abiertos = []
+    sucesores = []
+    cerrados = []
+    abiertos.append(raiz)
+    contador = 0
+
+    while abiertos and not objetivo:
+        actual = abiertos[0]
+        abiertos.pop(0)
+        cerrados.append(actual)
+        objetivo = testObjetivo(actual.estado)
+        if not objetivo:
+            sucesores = expandir(actual)
+            abiertos.extend(sucesores)
+            contador += 1
+
+    if objetivo:
+        dispSolucion(actual)
+        print("solucion encontrada en ", contador)
+    elif not objetivo:
+        print("No se ha encontrado solución")
+
+
+

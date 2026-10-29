@@ -2,16 +2,16 @@ from NPuzle_Alum import estadoInicial, aplicaOperador, testObjetivo, esValido, o
 from Busqueda_Alum import BFS
 
 # Código para probar Npuzle - No requiere de la función de búsqueda
-estado = estadoInicial()
-while not testObjetivo(estado):
-    print(estado.t)
-    print("Introduzca el movimiento:")
-    print(operadores)
-    op = input(" ")
-    if op in operadores and esValido(op, estado):
-        estado = aplicaOperador(op, estado)
-if testObjetivo(estado):
-    print("Ha alcanzado el estado objetivo")
+# estado = estadoInicial()
+# while not testObjetivo(estado):
+#     print(estado.t)
+#     print("Introduzca el movimiento:")
+#     print(operadores)
+#     op = input(" ")
+#     if op in operadores and esValido(op, estado):
+#         estado = aplicaOperador(op, estado)
+# if testObjetivo(estado):
+#     print("Ha alcanzado el estado objetivo")
 
 # Código para realizar la búsqueda en anchura
-# BFS() 
+BFS() 
